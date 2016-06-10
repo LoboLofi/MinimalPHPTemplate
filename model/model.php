@@ -2,55 +2,55 @@
 require_once('db.php');
 
 class model{
-  public $columnas;
-  public $NombreDeTabla;
-  public $LlavePrimaria;
-  public $_LlavePrimaria;
+  public $column;
+  public $tableName;
+  public $primaryKey;
+  public $_primaryKey;
 
-  public function ActualizarVal( $col, $NvoVal ){
-    if( array_key_exists($col,$this->columnas) ){
-      $this->columnas[$col] = $NvoVal;
-      if( $col === $this->LlavePrimaria ){
-        $this->_LlavePrimaria = $NvoVal;
+  public function UpdateValue( $col, $newVal ){
+    if( array_key_exists($col,$this->column) ){
+      $this->column[$col] = $newVal;
+      if( $col === $this->primaryKey ){
+        $this->_primaryKey = $newVal;
       }
       return 1;
     }
     return -1;
   }
 
-  public function Seleccionar( $opc = null ){
+  public function Select( $opc = null ){
     $db =  new DataBase;
-    return is_null($opc) ? $db->Seleccionar($this->NombreDeTabla) : $db->Seleccionar($this->NombreDeTabla,$opc) ;
+    return is_null($opc) ? $db->Select($this->tableName) : $db->Select($this->tableName,$opc) ;
   }
-  public function Contar( $opc = null ){
+  public function Count( $opc = null ){
     $db =  new DataBase;
-    return is_null($opc) ? $db->Contar($this->NombreDeTabla) : $db->Contar($this->NombreDeTabla,$opc) ;
+    return is_null($opc) ? $db->Count($this->tableName) : $db->Count($this->tableName,$opc) ;
   }
 
-  public function Guardar(){
+  public function Create(){
     $db =  new DataBase;
     $_col   = null;
     $_val   = null;
-    foreach( $this->columnas as $col => $val) {
+    foreach( $this->column as $col => $val) {
       if( is_null($val) ) {
         continue;
       }
       $_col[]=$col;
       $_val[]=$val;
     }
-    return $db->Crear($this->NombreDeTabla, $_col, $_val);
+    return $db->Crear($this->tableName, $_col, $_val);
   }
-  public function Actualizar( ){
+  public function Update( ){
     $db =  new DataBase;
     $_val   = '';
-    foreach( $this->columnas as $col => $val) {
-      if( $col === $this->LlavePrimaria || is_null($val) )
+    foreach( $this->column as $col => $val) {
+      if( $col === $this->primaryKey || is_null($val) )
         continue;
       $_val= $_val.", $col='$val'";
     }
     $_val = substr( $_val, 1, -1 );
-    $opc = "$this->LlavePrimaria='$this->_LlavePrimaria' ";
-    return $db->Actualizar( $this->NombreDeTabla, $_val ,$opc);
+    $opc = "$this->primaryKey='$this->_primaryKey' ";
+    return $db->Actualizar( $this->tableName, $_val ,$opc);
   }
 }
 ?>

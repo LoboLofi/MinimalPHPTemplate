@@ -1,16 +1,16 @@
 <?php
 define('DB_SERVER', 'localhost');
-define('DB_USERNAME', 'movil');
-define('DB_PASSWORD', ']Rm3+*=y?;8u');
-define('DB_DATABASE', 'turismo');
+define('DB_USERNAME', 'dbUsername');
+define('DB_PASSWORD', 'aVeryVeryVerySecurePassword');
+define('DB_DATABASE', 'NameOfDataBase');
 
 class DataBase{
   private $db;
 
-  private function AbrirConexion(){
+  private function OpenConnection(){
     $this->db = new mysqli(DB_SERVER,DB_USERNAME,DB_PASSWORD,DB_DATABASE);
   }
-  private function cerrarConexion(){
+  private function CloseConection(){
     $this->db->close();
   }
 
@@ -29,74 +29,74 @@ class DataBase{
     return $rtn.'';
   }
 
-  private function IntentarEjecutar( $query ){
+  private function TryToExecute( $query ){
     if ($this->db->connect_errno) {
-      printf("Algo salio mal: %s\n", $this->db->connect_error);
+      printf("Something went wrong: %s\n", $this->db->connect_error);
       exit();
     }
     return $this->db->query( $query );
   }
-  private function Ejecutar( $query ){
-    $this->AbrirConexion();
-    $resultado = null;
+  private function Execute( $query ){
+    $this->OpenConnection();
+    $result = null;
     $rows = array();
     try{
-      $resultado = $this->IntentarEjecutar( $query );
-      if( !($resultado instanceof bool) && $resultado != true ){
-        var_dump($resultado);
-        echo "  Algo salio mal <br>Error: " . $this->db->error . "<br>";
+      $result = $this->TryToExecute( $query );
+      if( !($result instanceof bool) && $result != true ){
+        var_dump($result);
+        echo "  Something went wrong <br>Error: " . $this->db->error . "<br>";
       }
-      if($resultado instanceof mysqli_result){
-        while( $row = $resultado->fetch_assoc() ){
+      if($result instanceof mysqli_result){
+        while( $row = $result->fetch_assoc() ){
         	$rows[] = $row;
         }
-        $resultado = $rows;
+        $result = $rows;
       }
     }catch( Exception $e ){
-      var_dump($resultado);
-      echo "  Algo salio mal <br>Error: " . $this->db->error . "<br>";
+      var_dump($result);
+      echo "  Something went wrong <br>Error: " . $this->db->error . "<br>";
     }finally{
-      $this->CerrarConexion();
+      $this->CloseConection();
     }
-    return $resultado;
+    return $result;
   }
 
-  public function Crear(  $tabla, $col, $val ){
+  public function Create(  $table, $col, $val ){
     $_col = $this->ReduceQuo( $col );
     $_val = $this->Reduce( $val );
-    $sql  = "INSERT INTO $tabla ($_col) VALUES ( $_val )";
-    return $this->Ejecutar( $sql );
+    $sql  = "INSERT INTO $table ($_col) VALUES ( $_val )";
+    return $this->Execute( $sql );
   }
-  public function Borrar( $tabla, $opciones ){
-    $sql = "DELETE FROM $tabla WHERE {$opciones}";
-    return $this->Ejecutar( $sql );
+  public function Delete( $table, $options ){
+    $sql = "DELETE FROM $table WHERE {$options}";
+    return $this->Execute( $sql );
   }
-  public function Seleccionar( $tabla, $opciones = null ){
-    $sql = "SELECT * FROM $tabla ";
-    if( $opciones != null ){
-      $sql = $sql." WHERE $opciones";
+  public function Select( $table, $options = null ){
+    $sql = "SELECT * FROM $table ";
+    if( $options != null ){
+      $sql = $sql." WHERE $options";
     }
-    return $this->Ejecutar( $sql );
-  }
-
-  public function Contar( $tabla, $opciones = null ){
-    $sql = "SELECT count(*) FROM $tabla ";
-    if( $opciones != null ){
-      $sql = $sql." WHERE $opciones";
-    }
-    $respuesta = $this->Ejecutar( $sql );
-    if( is_array($respuesta) ){
-      return $respuesta[0]['count(*)'];
-    }
-    return $respuesta;
+    return $this->Execute( $sql );
   }
 
-  public function Actualizar( $tabla, $val, $opciones = null ){
-    $sql = "UPDATE $tabla SET $val";
-    if( $opciones != null ){
-      $sql = $sql." WHERE $opciones";
+  public function Count( $table, $options = null ){
+    $sql = "SELECT count(*) FROM $table ";
+    if( $options != null ){
+      $sql = $sql." WHERE $options";
     }
-    return $this->Ejecutar( $sql );
+    $responce = $this->Execute( $sql );
+    if( is_array($responce) ){
+      return $responce[0]['count(*)'];
+    }
+    return $responce;
+  }
+
+  public function Update( $table, $val, $options = null ){
+    $sql = "UPDATE $table SET $val";
+    if( $options != null ){
+      $sql = $sql." WHERE $options";
+    }
+    return $this->Execute( $sql );
   }
 
 }
