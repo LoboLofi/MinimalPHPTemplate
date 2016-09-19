@@ -38,7 +38,7 @@ class model{
       $_col[]=$col;
       $_val[]=$val;
     }
-    return $db->Crear($this->tableName, $_col, $_val);
+    return $db->Create($this->tableName, $_col, $_val);
   }
   public function Update( ){
     $db =  new DataBase;
@@ -50,7 +50,7 @@ class model{
     }
     $_val = substr( $_val, 1, -1 );
     $opc = "$this->primaryKey='$this->_primaryKey' ";
-    return $db->Actualizar( $this->tableName, $_val ,$opc);
+    return $db->Update( $this->tableName, $_val ,$opc);
   }
 }
 ?>
